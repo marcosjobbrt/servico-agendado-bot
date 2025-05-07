@@ -1,7 +1,7 @@
 import sqlite3
 import os
 from dotenv import load_dotenv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta  # Corrigido: importação do timedelta
 
 # Carrega as variáveis de ambiente do .env
 load_dotenv()
@@ -31,18 +31,30 @@ def verificar_servicos_90_dias():
     data_limite = data_atual - timedelta(days=90)
     data_limite_str = data_limite.strftime('%Y-%m-%d')
 
-    # Consulta para buscar agendamentos feitos há mais de 90 dias
-    cursor.execute("SELECT nome, telefone, data FROM agendamentos WHERE data <= ?", (data_limite_str,))
+    # Consulta para buscar agendamentos feitos há mais de 90 dias e que ainda não tiveram follow-up
+    cursor.execute("""
+        SELECT id, nome, telefone, data_servico, ultimo_followup 
+        FROM agendamentos 
+        WHERE data_servico <= ? AND (ultimo_followup IS NULL OR ultimo_followup < ?)
+    """, (data_limite_str, data_limite_str))
     
     # Recupera todos os resultados
     agendamentos = cursor.fetchall()
 
     # Para cada agendamento, envia o follow-up
     for agendamento in agendamentos:
-        nome, telefone, data_servico = agendamento
+        id_agendamento, nome, telefone, data_servico, ultimo_followup = agendamento
         print(f"Enviando follow-up para {nome} ({telefone}), serviço realizado em: {data_servico}")
         enviar_mensagem(nome, telefone)
 
+        # Atualiza o campo 'ultimo_followup' com a data atual
+        cursor.execute("""
+            UPDATE agendamentos 
+            SET ultimo_followup = ? 
+            WHERE id = ?
+        """, (data_atual.strftime('%Y-%m-%d'), id_agendamento))
+
+    conn.commit()
     conn.close()
 
 # Chama a função para verificar os serviços e enviar o follow-up
