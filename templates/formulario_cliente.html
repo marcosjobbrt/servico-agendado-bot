@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Clientes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        input[type="submit"] {
+            width: auto;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px 20px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .success-message {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Cadastrar múltiplos clientes</h1>
+        
+        <!-- Mensagem de sucesso após o cadastro -->
+        {% if success %}
+        <div class="success-message">
+            Clientes cadastrados com sucesso!
+        </div>
+        {% endif %}
+
+        <form action="/cadastrar" method="POST">
+            <label for="empresa">Empresa:</label>
+            <select name="empresa" id="empresa">
+                <option value="Ecopest">Ecopest</option>
+                <option value="PestControl">PestControl</option>
+                <!-- Aqui podem ser carregadas as empresas do banco de dados -->
+            </select><br><br>
+        
+            <label for="nome">Nome:</label>
+            <input type="text" name="nome" required><br><br>
+        
+            <label for="telefone">Telefone:</label>
+            <input type="text" name="telefone" required><br><br>
+        
+            <label for="endereco">Endereço:</label>
+            <input type="text" name="endereco" required><br><br>
+        
+            <label for="data_servico">Data do Serviço:</label>
+            <input type="text" name="data_servico" required><br><br>
+        
+            <button type="submit">Cadastrar</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,5 +1,7 @@
 import os
 from dotenv import load_dotenv
+from datetime import datetime
+import sqlite3
 
 # Ativar/desativar modo simulado
 modo_simulado = True
@@ -7,6 +9,7 @@ modo_simulado = True
 # Carrega variáveis do .env
 load_dotenv()
 
+# Função para enviar mensagem
 def enviar_mensagem(cliente, telefone):
     mensagem = f"Olá {cliente}, estamos a caminho para realizar o serviço de dedetização conforme agendado para hoje. Até breve!"
 
@@ -27,5 +30,35 @@ def enviar_mensagem(cliente, telefone):
 
         print(f"Mensagem enviada para {telefone}")
 
-# Exemplo de chamada
-enviar_mensagem("Marcos", "+5562992059790")
+# Função para avisar todos os clientes com serviço agendado para hoje
+def avisar_clientes_hoje():
+    # Conectar ao banco de dados SQLite
+    conn = sqlite3.connect('agendamentos.db')
+    cursor = conn.cursor()
+
+    # Calcular a data de hoje
+    data_hoje = datetime.now().strftime('%Y-%m-%d')
+
+    # Buscar os agendamentos para hoje
+    cursor.execute('''
+        SELECT nome, telefone
+        FROM agendamentos
+        WHERE data_servico = ?
+    ''', (data_hoje,))
+
+    # Obter todos os resultados de agendamentos
+    agendamentos = cursor.fetchall()
+
+    if agendamentos:
+        for agendamento in agendamentos:
+            cliente, telefone = agendamento
+            # Enviar mensagem para o cliente
+            enviar_mensagem(cliente, telefone)
+    else:
+        print(f"Não há agendamentos para hoje ({data_hoje}).")
+
+    conn.close()
+
+# Executa a função para avisar os clientes
+if __name__ == '__main__':
+    avisar_clientes_hoje()

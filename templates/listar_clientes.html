@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar Clientes - {{ empresa.nome }}</title>
+</head>
+<body>
+    <h1>Clientes da Empresa: {{ empresa.nome }}</h1>
+
+    <ul>
+        {% for cliente in clientes %}
+            <li>
+                {{ cliente.nome }} - {{ cliente.telefone }} - {{ cliente.endereco }} - {{ cliente.data_servico }}
+            </li>
+        {% else %}
+            <li>Não há clientes cadastrados para esta empresa.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('listar_empresas') }}">Voltar para a lista de empresas</a>
+</body>
+</html>

@@ -4,21 +4,29 @@ import sqlite3
 conn = sqlite3.connect('agendamentos.db')
 cursor = conn.cursor()
 
-# Verificar se a tabela 'agendamentos' existe
-cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='agendamentos';")
-tabela_existe = cursor.fetchone()
+# Criar tabela para empresas de DDT (caso não exista)
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS empresas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL
+)
+''')
 
-if tabela_existe:
-    # Executar um comando para mostrar as colunas da tabela agendamentos
-    cursor.execute("PRAGMA table_info(agendamentos);")
-    colunas = cursor.fetchall()
+# Criar tabela para agendamentos (caso não exista)
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS agendamentos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    data TEXT NOT NULL,
+    nome TEXT NOT NULL,
+    telefone TEXT NOT NULL,
+    endereco TEXT NOT NULL,
+    data_servico TEXT NOT NULL,
+    empresa TEXT NOT NULL
+)
+''')
 
-    # Exibir as colunas
-    print("Colunas da tabela 'agendamentos':")
-    for coluna in colunas:
-        print(coluna)
-else:
-    print("A tabela 'agendamentos' não existe no banco de dados.")
-
-# Fechar a conexão
+# Commit e fechar a conexão
+conn.commit()
 conn.close()
+
+print("Estrutura do banco verificada e tabelas criadas (se necessário).")

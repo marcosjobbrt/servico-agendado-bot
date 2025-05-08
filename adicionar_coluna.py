@@ -1,16 +1,23 @@
 import sqlite3
+from datetime import datetime, timedelta
 
-# Conectar ao banco de dados
+# Data de amanhã
+data_amanha = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+data_amanha_str = data_amanha.strftime('%Y-%m-%d')
+
+# Conectar ao banco de dados SQLite
 conn = sqlite3.connect('agendamentos.db')
 cursor = conn.cursor()
 
-# Adicionar a coluna 'ultimo_followup' se não existir
-try:
-    cursor.execute('ALTER TABLE agendamentos ADD COLUMN ultimo_followup TEXT')
-    print("Coluna 'ultimo_followup' adicionada com sucesso.")
-except sqlite3.OperationalError:
-    print("A coluna 'ultimo_followup' já existe na tabela.")
+# Inserir um agendamento para amanhã com todos os campos
+cursor.execute(''' 
+    INSERT INTO agendamentos (data, nome, telefone, endereco, data_servico, ultimo_followup, empresa)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+''', (data_amanha_str, 'Maria', '+5511999999999', 'Rua Exemplo, 123', data_amanha_str, None, 'Ecopest'))
 
-# Commit e fechar a conexão
+# Confirmar a transação e fechar a conexão
 conn.commit()
 conn.close()
+
+print(f"Agendamento inserido para amanhã ({data_amanha_str})")
+
